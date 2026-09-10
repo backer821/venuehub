@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: venuehub
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: venuehub-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      # Demo/test only: lets the "Seed Demo Data" button on /login work on the
+      # deployed instance. Set to "false" (or remove) once you're done testing —
+      # it wipes and reseeds all data on every call.
+      - key: ALLOW_SEED
+        value: "true"
+
+databases:
+  - name: venuehub-db
+    plan: free
+    databaseName: venuehub
+    user: venuehub
