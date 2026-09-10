@@ -3,11 +3,14 @@ services:
     name: venuehub
     runtime: node
     plan: free
-    buildCommand: npm ci && npm run build
+    buildCommand: npm ci --include=dev && npm run build
     startCommand: npm start
     envVars:
-      - key: NODE_ENV
-        value: production
+      # Do NOT set NODE_ENV here: `next build`/`next start` set it internally
+      # at the right time. Setting it as a service-wide env var makes Render
+      # apply it during `npm ci` too, which makes npm skip devDependencies
+      # (tailwindcss, typescript, etc.) — breaking the build. `--include=dev`
+      # below is a second safety net against the same class of problem.
       - key: DATABASE_URL
         fromDatabase:
           name: venuehub-db
